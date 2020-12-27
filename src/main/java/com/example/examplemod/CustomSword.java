@@ -17,6 +17,9 @@ import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 public class CustomSword extends SwordItem {
 
     private static final Logger LOGGER = LogManager.getLogger();
@@ -36,7 +39,7 @@ public class CustomSword extends SwordItem {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
         player.sendStatusMessage(
-                new StringTextComponent("Happy Llamukkah"),
+                new StringTextComponent("Happy Llamakkah"),
                 true
         );
 
@@ -45,7 +48,7 @@ public class CustomSword extends SwordItem {
 
         int offset = 3;
         int nextX = playerPos.getX();
-        int nextY = playerPos.getY() + 3;
+        int nextY = playerPos.getY() + 8;
         int nextZ = playerPos.getZ();
         switch (facing) {
             case EAST:
@@ -71,12 +74,21 @@ public class CustomSword extends SwordItem {
         LOGGER.info("Player pos: {}, {}, {}", playerPos.getX(), playerPos.getY(), playerPos.getZ());
         LOGGER.info("Llama pos: {}, {}, {}", nextX, nextY, nextZ);
 
-        Entity llama = new LlamaEntity(EntityType.LLAMA, world);
+        LlamaEntity llama = new LlamaEntity(EntityType.LLAMA, world);
         llama.setPosition(
                 nextX,
                 nextY,
                 nextZ
         );
+
+        ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
+
+        exec.schedule(new Runnable() {
+            public void run() {
+                LOGGER.info("ATTACK!!!");
+                llama.attackEntityWithRangedAttack(player, 0);
+            }
+        }, 3, TimeUnit.SECONDS);
 
         world.addEntity(llama);
 
