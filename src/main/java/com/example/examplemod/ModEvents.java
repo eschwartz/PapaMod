@@ -18,7 +18,7 @@ public class ModEvents {
 
     @SubscribeEvent
     public static void registerBlocks(final RegistryEvent.Register<Item> itemRegisterEvent) {
-        sword = new CustomSword();
+        sword = CustomSwordMod.sword;
         sword.setRegistryName("swordmod");
         itemRegisterEvent.getRegistry().register(sword);
     }

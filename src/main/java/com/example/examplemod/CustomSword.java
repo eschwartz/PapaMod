@@ -85,6 +85,12 @@ public class CustomSword extends SwordItem {
             llama.attackEntityWithRangedAttack(player, 0);
         }, 2, TimeUnit.SECONDS);
 
+        // Throw the megaman?
+        CustomSword sword = CustomSwordMod.sword;
+        if (!world.isRemote) {
+
+        }
+
 
         return super.onItemRightClick(world, player, hand);
     }

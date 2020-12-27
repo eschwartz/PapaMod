@@ -19,6 +19,8 @@ public class CustomSwordMod {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
+    public static CustomSword sword = new CustomSword();
+
     // get a reference to the event bus for this mod;  Registration events are fired on this bus.
     public static IEventBus MOD_EVENT_BUS;
 
