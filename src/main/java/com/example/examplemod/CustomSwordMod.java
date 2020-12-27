@@ -1,10 +1,11 @@
 package com.example.examplemod;
 
-import cpw.mods.modlauncher.EnumerationHelper;
-import net.minecraft.item.Item;
-import net.minecraftforge.event.RegistryEvent;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -27,7 +28,18 @@ public class CustomSwordMod {
 
         MOD_EVENT_BUS = FMLJavaModLoadingContext.get().getModEventBus();
 
-        MOD_EVENT_BUS.register(CommonProxy.class);
+        MOD_EVENT_BUS.register(ModEvents.class);
+
+        MinecraftForge.EVENT_BUS.addListener(this::onTick);
+    }
+
+    private void onTick(final TickEvent.PlayerTickEvent evt) {
+        BlockPos pos = evt.player.getPosition();
+        Direction face = evt.player.getHorizontalFacing();
+
+        if (evt.player.world.getGameTime() % 20 == 0) {
+            //LOGGER.info("pos: {}, face: {}", pos, face);
+        }
     }
 
     private void setup(final FMLCommonSetupEvent event) {

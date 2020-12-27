@@ -14,9 +14,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class CustomSword extends SwordItem {
 
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public CustomSword() {
         super(ItemTier.DIAMOND, 3, -3.0F, (new Item.Properties()).group(ItemGroup.COMBAT));
@@ -40,25 +43,43 @@ public class CustomSword extends SwordItem {
         BlockPos playerPos = player.getPosition();
         Direction facing = player.getHorizontalFacing();
 
+        int offset = 3;
+        int nextX = playerPos.getX();
+        int nextY = playerPos.getY() + 3;
+        int nextZ = playerPos.getZ();
+        switch (facing) {
+            case EAST:
+                LOGGER.info("east");
+                nextX += offset;
+                break;
+            case WEST:
+                LOGGER.info("west");
+                nextX -= offset;
+                break;
+            case NORTH:
+                LOGGER.info("north");
+                nextZ -= offset;
+                break;
+            case SOUTH:
+                LOGGER.info("south");
+                nextZ += offset;
+                break;
+            default:
+                LOGGER.info("Unknown facing: {}", facing);
+        }
+
+        LOGGER.info("Player pos: {}, {}, {}", playerPos.getX(), playerPos.getY(), playerPos.getZ());
+        LOGGER.info("Llama pos: {}, {}, {}", nextX, nextY, nextZ);
+
         Entity llama = new LlamaEntity(EntityType.LLAMA, world);
         llama.setPosition(
-                playerPos.getX() + facing.getXOffset() * 4,
-                playerPos.getY() + facing.getYOffset() * 4,
-                playerPos.getZ() + 1
+                nextX,
+                nextY,
+                nextZ
         );
 
         world.addEntity(llama);
 
         return super.onItemRightClick(world, player, hand);
-    }
-
-
-    @Override
-    public boolean onLeftClickEntity(ItemStack stack, PlayerEntity player, Entity entity) {
-        player.sendStatusMessage(
-                new StringTextComponent("S$WING S$WING"),
-                true
-        );
-        return false;
     }
 }
