@@ -7,6 +7,7 @@ import net.minecraft.entity.passive.horse.LlamaEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
@@ -19,22 +20,33 @@ public class CustomSword extends SwordItem {
         super(ItemTier.DIAMOND, 3, -3.0F, (new Item.Properties()).group(ItemGroup.COMBAT));
     }
 
-
+    
 
     /**
-     * Called on right-click
+     * Called on right-click, when pointed at a block or something
      */
     @Override
     public ActionResultType onItemUse(ItemUseContext context) {
-        context.getPlayer().sendStatusMessage(
+        PlayerEntity player = context.getPlayer();
+        player.sendStatusMessage(
                 new StringTextComponent("Happy Llamukkah"),
                 true
         );
 
+        BlockPos playerPos = player.getPosition();
+        Direction facing = player.getHorizontalFacing();
+
+
         World world = context.getWorld();
         Entity llama = new LlamaEntity(EntityType.LLAMA, world);
-        BlockPos playerPos = context.getPlayer().getPosition();
-        llama.setPosition(playerPos.getX() + 1, playerPos.getY(), playerPos.getZ());
+
+
+
+        llama.setPosition(
+                playerPos.getX() + facing.getXOffset() * 2,
+                playerPos.getY() + facing.getYOffset() * 2,
+                playerPos.getZ()
+        );
         world.addEntity(llama);
 
         return super.onItemUse(context);
