@@ -46,51 +46,45 @@ public class CustomSword extends SwordItem {
         BlockPos playerPos = player.getPosition();
         Direction facing = player.getHorizontalFacing();
 
+        // Determine llama position, based on the player position and direction
         int offset = 3;
         int nextX = playerPos.getX();
         int nextY = playerPos.getY() + 8;
         int nextZ = playerPos.getZ();
         switch (facing) {
             case EAST:
-                LOGGER.info("east");
                 nextX += offset;
                 break;
             case WEST:
-                LOGGER.info("west");
                 nextX -= offset;
                 break;
             case NORTH:
-                LOGGER.info("north");
                 nextZ -= offset;
                 break;
             case SOUTH:
-                LOGGER.info("south");
                 nextZ += offset;
                 break;
             default:
                 LOGGER.info("Unknown facing: {}", facing);
         }
 
-        LOGGER.info("Player pos: {}, {}, {}", playerPos.getX(), playerPos.getY(), playerPos.getZ());
-        LOGGER.info("Llama pos: {}, {}, {}", nextX, nextY, nextZ);
 
+        // Spwan the llama
         LlamaEntity llama = new LlamaEntity(EntityType.LLAMA, world);
         llama.setPosition(
                 nextX,
                 nextY,
                 nextZ
         );
-
-        ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
-
-        exec.schedule(new Runnable() {
-            public void run() {
-                LOGGER.info("ATTACK!!!");
-                llama.attackEntityWithRangedAttack(player, 0);
-            }
-        }, 3, TimeUnit.SECONDS);
-
         world.addEntity(llama);
+
+        // Spit, after a couple seconds
+        ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
+        exec.schedule(() -> {
+            LOGGER.info("ATTACK!!!");
+            llama.attackEntityWithRangedAttack(player, 0);
+        }, 2, TimeUnit.SECONDS);
+
 
         return super.onItemRightClick(world, player, hand);
     }
