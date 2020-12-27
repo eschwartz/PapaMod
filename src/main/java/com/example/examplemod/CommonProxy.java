@@ -10,7 +10,7 @@ public class CommonProxy {
     public static CustomSword sword;
 
     @SubscribeEvent
-    public void registerBlocks(final RegistryEvent.Register<Item> itemRegisterEvent) {
+    public static void registerBlocks(final RegistryEvent.Register<Item> itemRegisterEvent) {
         sword = new CustomSword();
         sword.setRegistryName("swordmod");
         itemRegisterEvent.getRegistry().register(sword);
