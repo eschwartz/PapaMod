@@ -32,5 +32,6 @@ public class CustomSwordMod {
 
     private void setup(final FMLCommonSetupEvent event) {
         LOGGER.info("In CustomSwordMod setup");
+
     }
 }
