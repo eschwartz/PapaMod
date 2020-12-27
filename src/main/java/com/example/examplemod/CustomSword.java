@@ -52,36 +52,6 @@ public class CustomSword extends SwordItem {
         return super.onItemRightClick(world, player, hand);
     }
 
-    /**
-     * Called on right-click, when pointed at a block or something
-     */
-    /*
-    @Override
-    public ActionResultType onItemUse(ItemUseContext context) {
-        PlayerEntity player = context.getPlayer();
-        player.sendStatusMessage(
-                new StringTextComponent("Happy Llamukkah"),
-                true
-        );
-
-        BlockPos playerPos = player.getPosition();
-        Direction facing = player.getHorizontalFacing();
-
-
-        World world = context.getWorld();
-        Entity llama = new LlamaEntity(EntityType.LLAMA, world);
-
-
-
-        llama.setPosition(
-                playerPos.getX() + facing.getXOffset() * 2,
-                playerPos.getY() + facing.getYOffset() * 2,
-                playerPos.getZ()
-        );
-        world.addEntity(llama);
-
-        return super.onItemUse(context);
-    }*/
 
     @Override
     public boolean onLeftClickEntity(ItemStack stack, PlayerEntity player, Entity entity) {
