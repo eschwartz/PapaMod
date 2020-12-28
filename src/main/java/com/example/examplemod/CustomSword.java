@@ -30,15 +30,40 @@ public class CustomSword extends SwordItem {
     }
 
     /**
-     * Called to trigger the item's "innate" right click behavior. To handle when this item is used on a Block, see
+     * Called to trigger the item's "innate" right click behavior.
+     * To handle when this item is used on a Block, see
      * {@link #onItemUse}.
-     *
-     * @param world
-     * @param player
-     * @param hand
      */
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
+        //spawnLlama(world, player);
+
+        // Throw the Item
+        if (!world.isRemote) {
+            int PROJECTILE_COUNT = 1;
+            for (int i = 0; i < PROJECTILE_COUNT; i++) {
+                ItemStack itemStackToThrow = new ItemStack(CustomSwordMod.sword);
+                Projectile projectileEntity = new Projectile(world, player);
+                projectileEntity.setItem(itemStackToThrow);
+
+                // set the motion of the new entity
+                // Copied from MinecraftByExample repo (EmojiItem)
+                projectileEntity.func_234612_a_(
+                        player,
+                        player.rotationPitch + (random.nextFloat() * 20) - 10,
+                        player.rotationYaw + (random.nextFloat() * 20) - 10,
+                        0.0F, 1.5F, 1.0F
+                ); //.shoot
+
+                world.addEntity(projectileEntity);
+            }
+        }
+
+
+        return super.onItemRightClick(world, player, hand);
+    }
+
+    private void spawnLlama(World world, PlayerEntity player) {
         player.sendStatusMessage(
                 new StringTextComponent("Happy Llamakkah"),
                 true
@@ -63,28 +88,5 @@ public class CustomSword extends SwordItem {
             LOGGER.info("ATTACK!!!");
             llama.attackEntityWithRangedAttack(player, 0);
         }, 2, TimeUnit.SECONDS);
-
-        // Throw the megaman?
-        if (!world.isRemote) {
-            for (int i = 0; i < 10; i++) {
-                ItemStack itemStackToThrow = new ItemStack(CustomSwordMod.sword);
-                Projectile projectileEntity = new Projectile(world, player);
-                projectileEntity.setItem(itemStackToThrow);
-
-                // set the motion of the new entity
-                // Copied from MinecraftByExample repo (EmojiItem)
-                projectileEntity.func_234612_a_(
-                        player,
-                        player.rotationPitch + (random.nextFloat() * 20) - 10,
-                        player.rotationYaw + (random.nextFloat() * 20) - 10,
-                        0.0F, 1.5F, 1.0F
-                ); //.shoot
-
-                world.addEntity(projectileEntity);
-            }
-        }
-
-
-        return super.onItemRightClick(world, player, hand);
     }
 }
