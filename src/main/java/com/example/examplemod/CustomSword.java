@@ -46,49 +46,39 @@ public class CustomSword extends SwordItem {
         BlockPos playerPos = player.getPosition();
         Direction facing = player.getHorizontalFacing();
 
-        // Determine llama position, based on the player position and direction
-        int offset = 3;
-        int nextX = playerPos.getX();
-        int nextY = playerPos.getY() + 8;
-        int nextZ = playerPos.getZ();
-        switch (facing) {
-            case EAST:
-                nextX += offset;
-                break;
-            case WEST:
-                nextX -= offset;
-                break;
-            case NORTH:
-                nextZ -= offset;
-                break;
-            case SOUTH:
-                nextZ += offset;
-                break;
-            default:
-                LOGGER.info("Unknown facing: {}", facing);
-        }
-
-
-        // Spwan the llama
+        // Spwan the llama in front of the player
         LlamaEntity llama = new LlamaEntity(EntityType.LLAMA, world);
-        llama.setPosition(
-                nextX,
-                nextY,
-                nextZ
-        );
+        BlockPos llamaPos = playerPos.offset(facing, 3);
+        llama.setPosition(llamaPos.getX(), llamaPos.getY(), llamaPos.getZ());
         world.addEntity(llama);
 
         // Spit, after a couple seconds
         ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
         exec.schedule(() -> {
+            player.sendStatusMessage(
+                    new StringTextComponent("ATTACK!!!"),
+                    true
+            );
             LOGGER.info("ATTACK!!!");
             llama.attackEntityWithRangedAttack(player, 0);
         }, 2, TimeUnit.SECONDS);
 
         // Throw the megaman?
-        CustomSword sword = CustomSwordMod.sword;
         if (!world.isRemote) {
+            ItemStack itemStackToThrow = new ItemStack(CustomSwordMod.sword);
+            Projectile projectileEntity = new Projectile(world, player);
+            projectileEntity.setItem(itemStackToThrow);
 
+            // set the motion of the new entity
+            // Copied from MinecraftByExample repo (EmojiItem)
+            projectileEntity.func_234612_a_(
+                    player,
+                    player.rotationPitch,
+                    player.rotationYaw,
+                    0.0F, 1.5F, 1.0F
+            ); //.shoot
+
+            world.addEntity(projectileEntity);
         }
 
 
