@@ -2,7 +2,7 @@
 
   "parent": "builtin/generated",
   "textures": {
-    "layer0": "papamod:item/megaman"
+    "layer0": "papamod:item/blaster_shot"
   },
   "__comment": "instead of parent:builtin/generated above, you could use item/generated to get default 'display' settings, i.e. most of the display settings below would be unnecessary",
   "display": {
@@ -17,9 +17,9 @@
       "scale": [ 0.61, 0.61, 0.61 ]
     },
     "firstperson_righthand": {
-      "rotation": [ -25, -90, 0 ],
-      "translation": [ 1.13, 3.20, 1.13 ],
-      "scale": [ 0.68, 0.68, 0.68 ]
+      "rotation": [ 0, -80, -13 ],
+      "translation": [ 1, 5, 0 ],
+      "scale": [ 0.45, 0.45, 0.45 ]
     },
     "firstperson_lefthand": {
       "rotation": [ 335, 90, 0 ],

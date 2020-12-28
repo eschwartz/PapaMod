@@ -37,7 +37,7 @@ public class Blaster extends SwordItem {
         if (!world.isRemote) {
             int PROJECTILE_COUNT = 10;
             for (int i = 0; i < PROJECTILE_COUNT; i++) {
-                ItemStack itemStackToThrow = new ItemStack(PapaMod.blaster);
+                ItemStack itemStackToThrow = new ItemStack(PapaMod.blasterShot);
                 BlasterShotEntity blasterShotEntity = new BlasterShotEntity(world, player);
                 blasterShotEntity.setItem(itemStackToThrow);
 

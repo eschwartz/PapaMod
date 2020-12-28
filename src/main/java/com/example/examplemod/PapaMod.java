@@ -23,6 +23,7 @@ public class PapaMod {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static Blaster blaster = new Blaster();
+    public static BlasterShot blasterShot = new BlasterShot();
 
     public static EntityType<BlasterShotEntity> projectileEntityType = EntityType.Builder
             .<BlasterShotEntity>create(BlasterShotEntity::new, EntityClassification.MISC)

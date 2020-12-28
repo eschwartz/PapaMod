@@ -32,7 +32,7 @@ public class BlasterShotEntity extends ProjectileItemEntity {
 
     @Override
     protected Item getDefaultItem() {
-        return PapaMod.blaster;
+        return PapaMod.blasterShot;
     }
 
     // If you forget to override this method, the default vanilla method will be called.
