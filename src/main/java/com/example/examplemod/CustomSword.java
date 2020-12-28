@@ -17,6 +17,7 @@ import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Random;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -65,20 +66,22 @@ public class CustomSword extends SwordItem {
 
         // Throw the megaman?
         if (!world.isRemote) {
-            ItemStack itemStackToThrow = new ItemStack(CustomSwordMod.sword);
-            Projectile projectileEntity = new Projectile(world, player);
-            projectileEntity.setItem(itemStackToThrow);
+            for (int i = 0; i < 10; i++) {
+                ItemStack itemStackToThrow = new ItemStack(CustomSwordMod.sword);
+                Projectile projectileEntity = new Projectile(world, player);
+                projectileEntity.setItem(itemStackToThrow);
 
-            // set the motion of the new entity
-            // Copied from MinecraftByExample repo (EmojiItem)
-            projectileEntity.func_234612_a_(
-                    player,
-                    player.rotationPitch,
-                    player.rotationYaw,
-                    0.0F, 1.5F, 1.0F
-            ); //.shoot
+                // set the motion of the new entity
+                // Copied from MinecraftByExample repo (EmojiItem)
+                projectileEntity.func_234612_a_(
+                        player,
+                        player.rotationPitch + (random.nextFloat() * 20) - 10,
+                        player.rotationYaw + (random.nextFloat() * 20) - 10,
+                        0.0F, 1.5F, 1.0F
+                ); //.shoot
 
-            world.addEntity(projectileEntity);
+                world.addEntity(projectileEntity);
+            }
         }
 
 
