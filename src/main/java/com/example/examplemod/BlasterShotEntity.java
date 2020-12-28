@@ -16,15 +16,15 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 
-public class Projectile extends ProjectileItemEntity {
+public class BlasterShotEntity extends ProjectileItemEntity {
 
     private static final byte VANILLA_IMPACT_STATUS_ID = 3;
 
-    public Projectile(World world, LivingEntity livingEntity) {
-        super(CustomSwordMod.projectileEntityType, livingEntity, world);
+    public BlasterShotEntity(World world, LivingEntity livingEntity) {
+        super(PapaMod.projectileEntityType, livingEntity, world);
     }
 
-    public Projectile(EntityType<? extends Projectile> entityType, World world) {
+    public BlasterShotEntity(EntityType<? extends BlasterShotEntity> entityType, World world) {
         super(entityType, world);
     }
 
@@ -32,7 +32,7 @@ public class Projectile extends ProjectileItemEntity {
 
     @Override
     protected Item getDefaultItem() {
-        return CustomSwordMod.sword;
+        return PapaMod.blaster;
     }
 
     // If you forget to override this method, the default vanilla method will be called.

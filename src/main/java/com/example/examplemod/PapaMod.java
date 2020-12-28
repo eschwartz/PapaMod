@@ -15,32 +15,32 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(CustomSwordMod.MODID)
-public class CustomSwordMod {
+@Mod(PapaMod.MODID)
+public class PapaMod {
 
-    public static final String MODID = "swordmod";
+    public static final String MODID = "papamod";
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static CustomSword sword = new CustomSword();
+    public static Blaster blaster = new Blaster();
 
-    public static EntityType<Projectile> projectileEntityType = EntityType.Builder
-            .<Projectile>create(Projectile::new, EntityClassification.MISC)
+    public static EntityType<BlasterShotEntity> projectileEntityType = EntityType.Builder
+            .<BlasterShotEntity>create(BlasterShotEntity::new, EntityClassification.MISC)
             .size(0.5F, 0.5F)
-            .build("swordmod:projectile");
+            .build("papamod:projectile");
 
     // get a reference to the event bus for this mod;  Registration events are fired on this bus.
     public static IEventBus MOD_EVENT_BUS;
 
 
-    public CustomSwordMod() {
+    public PapaMod() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 
         MOD_EVENT_BUS = FMLJavaModLoadingContext.get().getModEventBus();
 
         MOD_EVENT_BUS.register(CommonModEvents.class);
 
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> CustomSwordMod::registerClientEvents);
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> PapaMod::registerClientEvents);
 
         MinecraftForge.EVENT_BUS.addListener(this::onTick);
     }
@@ -57,7 +57,7 @@ public class CustomSwordMod {
     }
 
     private void setup(final FMLCommonSetupEvent event) {
-        LOGGER.info("In CustomSwordMod setup");
+        LOGGER.info("In PapaMod setup");
     }
 
     public static void registerClientEvents() {

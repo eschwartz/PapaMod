@@ -16,7 +16,7 @@ public class ClientModEvents {
     public static void onClientSetupEvent(FMLClientSetupEvent event) {
         // Register the custom renderer for each entity
         RenderingRegistry.registerEntityRenderingHandler(
-                CustomSwordMod.projectileEntityType,
+                PapaMod.projectileEntityType,
                 erm -> new SpriteRenderer<>(erm, Minecraft.getInstance().getItemRenderer())
         );
     }

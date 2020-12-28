@@ -11,11 +11,11 @@ public class CommonModEvents {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static CustomSword sword;
+    public static Blaster sword;
 
     @SubscribeEvent
     public static void registerBlocks(final RegistryEvent.Register<Item> itemRegisterEvent) {
-        sword = CustomSwordMod.sword;
+        sword = PapaMod.blaster;
         sword.setRegistryName("blaster");
         itemRegisterEvent.getRegistry().register(sword);
     }
@@ -27,7 +27,7 @@ public class CommonModEvents {
         LOGGER.warn("ent type reg");
         LOGGER.warn("--------------");
         LOGGER.warn("--------------");
-        CustomSwordMod.projectileEntityType.setRegistryName("swordmod:projectile");
-        entityTypeRegisterEvent.getRegistry().register(CustomSwordMod.projectileEntityType);
+        PapaMod.projectileEntityType.setRegistryName("papamod:projectile");
+        entityTypeRegisterEvent.getRegistry().register(PapaMod.projectileEntityType);
     }
 }

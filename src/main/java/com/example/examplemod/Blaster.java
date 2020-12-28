@@ -1,31 +1,26 @@
 package com.example.examplemod;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.horse.LlamaEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Random;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class CustomSword extends SwordItem {
+public class Blaster extends SwordItem {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public CustomSword() {
+    public Blaster() {
         super(ItemTier.DIAMOND, 3, -3.0F, (new Item.Properties()).group(ItemGroup.COMBAT));
     }
 
@@ -42,20 +37,20 @@ public class CustomSword extends SwordItem {
         if (!world.isRemote) {
             int PROJECTILE_COUNT = 10;
             for (int i = 0; i < PROJECTILE_COUNT; i++) {
-                ItemStack itemStackToThrow = new ItemStack(CustomSwordMod.sword);
-                Projectile projectileEntity = new Projectile(world, player);
-                projectileEntity.setItem(itemStackToThrow);
+                ItemStack itemStackToThrow = new ItemStack(PapaMod.blaster);
+                BlasterShotEntity blasterShotEntity = new BlasterShotEntity(world, player);
+                blasterShotEntity.setItem(itemStackToThrow);
 
                 // set the motion of the new entity
                 // Copied from MinecraftByExample repo (EmojiItem)
-                projectileEntity.func_234612_a_(
+                blasterShotEntity.func_234612_a_(
                         player,
                         player.rotationPitch + (random.nextFloat() * 20) - 10,
                         player.rotationYaw + (random.nextFloat() * 20) - 10,
                         0.0F, 1.5F, 1.0F
                 ); //.shoot
 
-                world.addEntity(projectileEntity);
+                world.addEntity(blasterShotEntity);
             }
         }
 
