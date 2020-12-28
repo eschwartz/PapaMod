@@ -16,7 +16,7 @@ public class CommonModEvents {
     @SubscribeEvent
     public static void registerBlocks(final RegistryEvent.Register<Item> itemRegisterEvent) {
         sword = CustomSwordMod.sword;
-        sword.setRegistryName("swordmod");
+        sword.setRegistryName("blaster");
         itemRegisterEvent.getRegistry().register(sword);
     }
 
@@ -30,21 +30,4 @@ public class CommonModEvents {
         CustomSwordMod.projectileEntityType.setRegistryName("swordmod:projectile");
         entityTypeRegisterEvent.getRegistry().register(CustomSwordMod.projectileEntityType);
     }
-
-    // register our entity types
-/*    @SubscribeEvent
-    public static void onEntityTypeRegistration(RegistryEvent.Register<EntityType<?>> entityTypeRegisterEvent) {
-        emojiEntityType = EntityType.Builder.<EmojiEntity>create(EmojiEntity::new, EntityClassification.MISC)
-                .size(0.25F, 0.25F)
-                .build("minecraftbyexample:mbe81a_emoji_type_registry_name");
-        emojiEntityType.setRegistryName("minecraftbyexample:mbe81a_emoji_type_registry_name");
-        entityTypeRegisterEvent.getRegistry().register(emojiEntityType);
-
-        boomerangEntityType = EntityType.Builder.<BoomerangEntity>create(BoomerangEntity::new, EntityClassification.MISC)
-                .size(0.25F, 0.25F)
-                .build("minecraftbyexample:mbe81b_boomerang_type_registry_name");
-        boomerangEntityType.setRegistryName("minecraftbyexample:mbe81b_boomerang_type_registry_name");
-        entityTypeRegisterEvent.getRegistry().register(boomerangEntityType);
-    }*/
-
 }

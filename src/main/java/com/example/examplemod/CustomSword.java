@@ -40,7 +40,7 @@ public class CustomSword extends SwordItem {
 
         // Throw the Item
         if (!world.isRemote) {
-            int PROJECTILE_COUNT = 1;
+            int PROJECTILE_COUNT = 10;
             for (int i = 0; i < PROJECTILE_COUNT; i++) {
                 ItemStack itemStackToThrow = new ItemStack(CustomSwordMod.sword);
                 Projectile projectileEntity = new Projectile(world, player);

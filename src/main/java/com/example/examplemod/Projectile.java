@@ -78,7 +78,7 @@ public class Projectile extends ProjectileItemEntity {
             this.world.createExplosion(
                     null,
                     hitPos.getX(), hitPos.getY(), hitPos.getZ(),
-                    4.0F,
+                    2.0F,
                     Explosion.Mode.BREAK
             );
         }
