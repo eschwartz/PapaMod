@@ -38,11 +38,10 @@ public class Blaster extends SwordItem {
 
         //player.swingArm(hand);
 
-        // Throw the Item
-        if (!world.isRemote) {
-            // Start animation
+        // Shoot!
+        if (!world.isRemote && !isAnimating) {
             isAnimating = true;
-            animationFrame = 1;
+            animationFrame = 0;
 
             int PROJECTILE_COUNT = 5;
             for (int i = 0; i < PROJECTILE_COUNT; i++) {
@@ -94,11 +93,11 @@ public class Blaster extends SwordItem {
         }, 2, TimeUnit.SECONDS);
     }
 
-    private int animationFrame = 1;
+    private int animationFrame = 0;
     private boolean isAnimating = false;
     private long lastAnimationTick = 0;
-    private int ANIMATION_INTERVAL = 3;
-    private int MAX_ANIMATION_FRAMES = 3;
+    private final int ANIMATION_INTERVAL = 2;
+    private final int MAX_ANIMATION_FRAMES = 4;
 
     /**
      * Animation Timer
@@ -107,8 +106,8 @@ public class Blaster extends SwordItem {
      */
     public float getAnimationFrame(ItemStack stack, @Nullable ClientWorld worldIn, @Nullable LivingEntity entityIn) {
         if (!isAnimating) {
-            animationFrame = 1;
-            return 0;
+            animationFrame = 0;
+            return animationFrame;
         }
 
         // Verify world && entity exist
@@ -125,9 +124,9 @@ public class Blaster extends SwordItem {
         }
 
         // Reset to first frame, if we're at the end
-        if (animationFrame >  MAX_ANIMATION_FRAMES) {
+        if (animationFrame >  MAX_ANIMATION_FRAMES - 1) {
             isAnimating = false;
-            animationFrame = 1;
+            animationFrame = 0;
         }
 
         return animationFrame;
