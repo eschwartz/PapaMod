@@ -33,9 +33,11 @@ public class Blaster extends SwordItem {
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
         //spawnLlama(world, player);
 
+        //player.swingArm(hand);
+
         // Throw the Item
         if (!world.isRemote) {
-            int PROJECTILE_COUNT = 10;
+            int PROJECTILE_COUNT = 5;
             for (int i = 0; i < PROJECTILE_COUNT; i++) {
                 ItemStack itemStackToThrow = new ItemStack(PapaMod.blasterShot);
                 BlasterShotEntity blasterShotEntity = new BlasterShotEntity(world, player);

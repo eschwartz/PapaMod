@@ -78,7 +78,7 @@ public class BlasterShotEntity extends ProjectileItemEntity {
             this.world.createExplosion(
                     null,
                     hitPos.getX(), hitPos.getY(), hitPos.getZ(),
-                    2.0F,
+                    1.5F,
                     Explosion.Mode.BREAK
             );
         }
