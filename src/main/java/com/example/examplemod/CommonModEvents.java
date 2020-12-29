@@ -13,7 +13,7 @@ public class CommonModEvents {
 
     @SubscribeEvent
     public static void registerBlocks(final RegistryEvent.Register<Item> itemRegisterEvent) {
-        PapaMod.blaster.setRegistryName("blaster");
+        PapaMod.blaster.setRegistryName("blaster_animation");
         itemRegisterEvent.getRegistry().register(PapaMod.blaster);
 
         PapaMod.blasterShot.setRegistryName("blastershot");

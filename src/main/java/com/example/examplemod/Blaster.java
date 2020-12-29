@@ -1,6 +1,8 @@
 package com.example.examplemod;
 
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.horse.LlamaEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
@@ -13,6 +15,7 @@ import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -37,6 +40,10 @@ public class Blaster extends SwordItem {
 
         // Throw the Item
         if (!world.isRemote) {
+            // Start animation
+            isAnimating = true;
+            animationFrame = 1;
+
             int PROJECTILE_COUNT = 5;
             for (int i = 0; i < PROJECTILE_COUNT; i++) {
                 ItemStack itemStackToThrow = new ItemStack(PapaMod.blasterShot);
@@ -85,5 +92,44 @@ public class Blaster extends SwordItem {
             LOGGER.info("ATTACK!!!");
             llama.attackEntityWithRangedAttack(player, 0);
         }, 2, TimeUnit.SECONDS);
+    }
+
+    private int animationFrame = 1;
+    private boolean isAnimating = false;
+    private long lastAnimationTick = 0;
+    private int ANIMATION_INTERVAL = 3;
+    private int MAX_ANIMATION_FRAMES = 3;
+
+    /**
+     * Animation Timer
+     *
+     * Return which frame of animation to show, depending on the state of the blaster
+     */
+    public float getAnimationFrame(ItemStack stack, @Nullable ClientWorld worldIn, @Nullable LivingEntity entityIn) {
+        if (!isAnimating) {
+            animationFrame = 1;
+            return 0;
+        }
+
+        // Verify world && entity exist
+        if (worldIn == null || entityIn == null) {
+            return animationFrame;
+        }
+
+        // If it's been longer than INTERVAL since the last frame,
+        // increment the frames
+        long gameTime = worldIn.getGameTime();
+        if (worldIn.getGameTime() - lastAnimationTick >= ANIMATION_INTERVAL) {
+            lastAnimationTick = gameTime;
+            animationFrame += 1;
+        }
+
+        // Reset to first frame, if we're at the end
+        if (animationFrame >  MAX_ANIMATION_FRAMES) {
+            isAnimating = false;
+            animationFrame = 1;
+        }
+
+        return animationFrame;
     }
 }

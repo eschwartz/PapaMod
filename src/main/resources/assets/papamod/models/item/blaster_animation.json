@@ -1,0 +1,13 @@
+{
+  "parent": "builtin/generated",
+  "textures": {
+    "layer0": "papamod:item/blaster"
+  },
+  "overrides": [
+    { "predicate": { "frame": 0 }, "model": "papamod:item/blaster" },
+    { "predicate": { "frame": 1 }, "model": "papamod:item/blaster_active_1" },
+    { "predicate": { "frame": 2 }, "model": "papamod:item/blaster_active_2" },
+    { "predicate": { "frame": 3 }, "model": "papamod:item/blaster_active_3" }
+  ]
+}
+
