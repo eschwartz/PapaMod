@@ -5,14 +5,9 @@
   },
   "overrides": [
     { "predicate": { "frame": 0 }, "model": "papamod:item/blaster_0" },
-    { "predicate": { "frame": 1 }, "model": "papamod:item/blaster_0" },
-    { "predicate": { "frame": 2 }, "model": "papamod:item/blaster_1" },
-    { "predicate": { "frame": 3 }, "model": "papamod:item/blaster_1" },
-    { "predicate": { "frame": 4 }, "model": "papamod:item/blaster_2" },
-    { "predicate": { "frame": 5 }, "model": "papamod:item/blaster_2" },
-    { "predicate": { "frame": 6 }, "model": "papamod:item/blaster_3" },
-    { "predicate": { "frame": 7 }, "model": "papamod:item/blaster_3" },
-    { "predicate": { "frame": 8 }, "model": "papamod:item/blaster_1" }
+    { "predicate": { "frame": 1 }, "model": "papamod:item/blaster_1" },
+    { "predicate": { "frame": 2 }, "model": "papamod:item/blaster_2" },
+    { "predicate": { "frame": 3 }, "model": "papamod:item/blaster_3" }
   ]
 }
 

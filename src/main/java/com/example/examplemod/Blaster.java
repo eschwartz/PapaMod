@@ -32,6 +32,24 @@ public class Blaster extends ShootableItem {
         super(new Item.Properties().maxStackSize(1).group(ItemGroup.COMBAT));
     }
 
+    enum AnimationFrame {
+        DEFAULT,
+        PULLBACK_1,
+        PULLBACK_2,
+        PULLBACK_3,
+    }
+
+    private AnimationFrame currentAnimationFrame = AnimationFrame.DEFAULT;
+
+    /**
+     * Animation Timer
+     *
+     * Return which frame of animation to show, depending on the state of the blaster
+     */
+    public float getAnimationFrame(ItemStack stack, @Nullable ClientWorld worldIn, @Nullable LivingEntity entityIn) {
+        return currentAnimationFrame.ordinal();
+    }
+
 
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         // Check if we have ammo
@@ -113,11 +131,7 @@ public class Blaster extends ShootableItem {
         }
 
         // Shoot!
-        if (!worldIn.isRemote && !isAnimating) {
-            // reset
-            isAnimating = true;
-            animationFrame = 0;
-
+        if (!worldIn.isRemote) {
 
             for (int i = 0; i < ammoCharged; i++) {
                 // Create BlasterShot (ammo items)
@@ -139,9 +153,10 @@ public class Blaster extends ShootableItem {
             }
 
             ammoCharged = 0;
+            currentAnimationFrame = AnimationFrame.DEFAULT;
 
             // TODO:
-            // - Render ammo count as it charges (or maybe animation is enough)
+            // [x] Reduce ammo while charging
             //      - Or how about consume ammo *while* it's charging
             //        in creative could consume and replace
             // - animate while charging (pull back)
@@ -206,6 +221,17 @@ public class Blaster extends ShootableItem {
             if (ammo.isEmpty()) {
                 playerIn.inventory.deleteStack(ammo);
             }
+
+            // Update animation frame (blaster pulls back)
+            if (ticksInUse <= 1) {
+                currentAnimationFrame = AnimationFrame.PULLBACK_2;
+            }
+            else if (ticksInUse <= 2) {
+                currentAnimationFrame = AnimationFrame.PULLBACK_2;
+            }
+            else {
+                currentAnimationFrame = AnimationFrame.PULLBACK_3;
+            }
         }
 
 
@@ -238,17 +264,17 @@ public class Blaster extends ShootableItem {
         }, 2, TimeUnit.SECONDS);
     }
 
-    private int animationFrame = 0;
+   /* private int animationFrame = 0;
     private boolean isAnimating = false;
     private long lastAnimationTick = 0;
     private final int ANIMATION_INTERVAL = 1;
     private final int MAX_ANIMATION_FRAMES = 9;
 
-    /**
+    *//**
      * Animation Timer
      *
      * Return which frame of animation to show, depending on the state of the blaster
-     */
+     *//*
     public float getAnimationFrame(ItemStack stack, @Nullable ClientWorld worldIn, @Nullable LivingEntity entityIn) {
         if (!isAnimating) {
             animationFrame = 0;
@@ -275,7 +301,7 @@ public class Blaster extends ShootableItem {
         }
 
         return animationFrame;
-    }
+    }*/
 
     /**
      * Get the predicate to match ammunition when searching the player's inventory, not their main/offhand
