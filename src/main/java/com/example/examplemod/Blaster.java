@@ -6,6 +6,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.horse.LlamaEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
@@ -18,13 +19,14 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
-public class Blaster extends SwordItem {
+public class Blaster extends ShootableItem {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     public Blaster() {
-        super(ItemTier.DIAMOND, 3, -3.0F, (new Item.Properties()).group(ItemGroup.COMBAT));
+        super(new Item.Properties().maxStackSize(1).group(ItemGroup.COMBAT));
     }
 
     /**
@@ -96,8 +98,8 @@ public class Blaster extends SwordItem {
     private int animationFrame = 0;
     private boolean isAnimating = false;
     private long lastAnimationTick = 0;
-    private final int ANIMATION_INTERVAL = 2;
-    private final int MAX_ANIMATION_FRAMES = 4;
+    private final int ANIMATION_INTERVAL = 1;
+    private final int MAX_ANIMATION_FRAMES = 9;
 
     /**
      * Animation Timer
@@ -130,5 +132,20 @@ public class Blaster extends SwordItem {
         }
 
         return animationFrame;
+    }
+
+    /**
+     * Get the predicate to match ammunition when searching the player's inventory, not their main/offhand
+     */
+    @Override
+    public Predicate<ItemStack> getInventoryAmmoPredicate() {
+        return (stack) -> stack.getItem() == PapaMod.blasterShot;
+    }
+
+    @Override
+    public int func_230305_d_() {
+        // ¯\_(ツ)_/¯
+        // This is the value used by BowItem, something to do with target distance? or cooldown?
+        return 15;
     }
 }
