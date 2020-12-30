@@ -1,6 +1,9 @@
 package com.example.examplemod;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.horse.LlamaEntity;
@@ -29,62 +32,183 @@ public class Blaster extends ShootableItem {
         super(new Item.Properties().maxStackSize(1).group(ItemGroup.COMBAT));
     }
 
-    /**
-     * Called to trigger the item's "innate" right click behavior.
-     * To handle when this item is used on a Block, see
-     * {@link #onItemUse}.
-     */
-    @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity playerIn, Hand handIn) {
+
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         // Check if we have ammo
         ItemStack blaster = playerIn.getHeldItem(handIn);
         ItemStack ammo = playerIn.findAmmo(blaster);
 
         // Fail if no ammo
-        if (ammo.isEmpty()) {
-           playerIn.sendStatusMessage(
-                   new StringTextComponent("Out of ammo!"),
-                   true
-           );
-           return ActionResult.resultFail(blaster);
+        if (ammo.isEmpty() && !playerIn.isCreative()) {
+            playerIn.sendStatusMessage(
+                    new StringTextComponent("Out of ammo!"),
+                    true
+            );
+            return ActionResult.resultFail(blaster);
+        }
+
+        playerIn.setActiveHand(handIn);
+        return ActionResult.resultPass(blaster);
+    }
+
+    /**
+     * How long it takes to use or consume an item
+     */
+    @Override
+    public int getUseDuration(ItemStack stack) {
+        final int ARBITRARY_LONG_TIME = 72000;
+        return ARBITRARY_LONG_TIME;
+    }
+
+    protected ItemStack getPlayerAmmo(PlayerEntity playerIn) {
+        Hand handIn = playerIn.getActiveHand();
+        ItemStack blaster = playerIn.getHeldItem(handIn);
+        ItemStack ammo = playerIn.findAmmo(blaster);
+
+        return ammo;
+    }
+
+    protected int getChargedShots(PlayerEntity playerIn, int ticks) {
+        // Get ammo stack
+        Hand handIn = playerIn.getActiveHand();
+        ItemStack blaster = playerIn.getHeldItem(handIn);
+        ItemStack ammo = playerIn.findAmmo(blaster);
+
+        // Check how much ammo we have available in our player inventory
+        // (for creative, just consider it a full stack, no matter what)
+        int availableAmmoCount = playerIn.isCreative() ? 64 : ammo.getCount();
+
+
+        // Charge up a shot for every X ticks
+        int shotsByChargeTime = Math.max((int)Math.floor(ticks / 2.5F), 1);
+
+        // Figure out how many we're actually going to shoot
+        int chargedShots = Math.min(
+                // Can shoot up to 5 ammo
+                Math.min(availableAmmoCount, maxAmmoPerShot),
+                // Don't shoot more than we've charged
+                shotsByChargeTime
+        );
+
+        return chargedShots;
+    }
+
+    /**
+     * Called when the player stops using an Item (stops holding the right mouse button).
+     */
+    @Override
+    public void onPlayerStoppedUsing(ItemStack stack, World worldIn, LivingEntity entityLiving, int timeLeft) {
+        if (!(entityLiving instanceof PlayerEntity)) return;
+        PlayerEntity playerIn = (PlayerEntity)entityLiving;
+
+        Hand handIn = playerIn.getActiveHand();
+
+        // Check if we have ammo
+        ItemStack blaster = playerIn.getHeldItem(handIn);
+        ItemStack ammo = playerIn.findAmmo(blaster);
+
+        // Fail if no ammo (and not in creative mode)
+        if (ammo.isEmpty() && !playerIn.isCreative()) {
+           return;
         }
 
         // Shoot!
-        if (!world.isRemote && !isAnimating) {
+        if (!worldIn.isRemote && !isAnimating) {
+            // reset
             isAnimating = true;
             animationFrame = 0;
 
-            // Can shoot up to 5 ammo
-            int projectileCount = Math.min(5, ammo.getCount());
 
-            for (int i = 0; i < projectileCount; i++) {
+            for (int i = 0; i < ammoCharged; i++) {
                 // Create BlasterShot (ammo items)
                 ItemStack itemStackToThrow = new ItemStack(PapaMod.blasterShot);
-                BlasterShotEntity blasterShotEntity = new BlasterShotEntity(world, playerIn);
+                BlasterShotEntity blasterShotEntity = new BlasterShotEntity(worldIn, playerIn);
                 blasterShotEntity.setItem(itemStackToThrow);
 
                 // set the motion of the new entity
                 // Copied from MinecraftByExample repo (EmojiItem)
                 blasterShotEntity.func_234612_a_(
                         playerIn,
-                        playerIn.rotationPitch + (random.nextFloat() * 20) - 10,
-                        playerIn.rotationYaw + (random.nextFloat() * 20) - 10,
+                        playerIn.rotationPitch + (random.nextFloat() * 30) - 15,
+                        playerIn.rotationYaw + (random.nextFloat() * 30) - 15,
                         0.0F, 1.5F, 1.0F
                 ); //.shoot
 
                 // Add Blaster Shot to world
-                world.addEntity(blasterShotEntity);
+                worldIn.addEntity(blasterShotEntity);
             }
 
-            // Remove ammo from inventory
-            ammo.shrink(projectileCount);
+            ammoCharged = 0;
+
+            // TODO:
+            // - Render ammo count as it charges (or maybe animation is enough)
+            //      - Or how about consume ammo *while* it's charging
+            //        in creative could consume and replace
+            // - animate while charging (pull back)
+            // - particles from the blaster
+            // - Recipes
+            // Bundle and share?
+        }
+    }
+
+    protected final float ticksPerCharge = 5F;
+    protected final int maxAmmoPerShot = 5;
+
+    protected int ammoCharged = 0;
+
+    /**
+     * Remove ammo from inventory, while charging
+     *
+     * Called each tick while using an item.
+     *
+     * @param stack  The Item being used
+     * @param entity The Player using the item
+     * @param timeLeft  Ticks remaining of item usage duration
+     */
+    @Override
+    public void onUsingTick(ItemStack stack, LivingEntity entity, int timeLeft) {
+        if (!(entity instanceof PlayerEntity)) return;
+        PlayerEntity playerIn = (PlayerEntity)entity;
+
+        // Only do this on the server
+        if (playerIn.world.isRemote) {
+            return;
+        }
+
+        // Calculate how long we've been holding down right-click button
+        int ticksInUse = this.getUseDuration(stack) - timeLeft;
+
+        // If it's been more than `ticksPerCharge` ticks,
+        // then we're ready to remove an item from inventory
+        boolean isTimeForNewCharge = ticksInUse % ticksPerCharge < 1;
+
+        // Check how many ammo we've charged up
+        // (so we don't remove more than our max)
+        int potentialChargeCount = (int)Math.floor(ticksInUse / ticksPerCharge);
+
+
+        if (isTimeForNewCharge && potentialChargeCount < maxAmmoPerShot) {
+            LOGGER.info("Ammo charged!");
+
+            // Remove an ammo from inventory
+            // (note, if w
+            ItemStack ammo = getPlayerAmmo(playerIn);
+
+            if (!ammo.isEmpty()) {
+                // Shave the ammo count, for when we actually shoot
+                ammoCharged += 1;
+
+                // Reduce inventory
+                if (!playerIn.isCreative()) {
+                    ammo.shrink(1);
+                }
+            }
             if (ammo.isEmpty()) {
                 playerIn.inventory.deleteStack(ammo);
             }
         }
 
 
-        return super.onItemRightClick(world, playerIn, handIn);
     }
 
     private void spawnLlama(World world, PlayerEntity player) {
@@ -168,10 +292,5 @@ public class Blaster extends ShootableItem {
         // ¯\_(ツ)_/¯
         // This is the value used by BowItem, something to do with target distance? or cooldown?
         return 15;
-    }
-
-    // Animation of player?!
-    public UseAction getUseAction(ItemStack stack) {
-        return UseAction.BOW;
     }
 }
