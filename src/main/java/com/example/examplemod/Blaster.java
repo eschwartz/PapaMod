@@ -137,28 +137,32 @@ public class Blaster extends ShootableItem {
 
             ammoCharged = 0;
 
-            ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
-            exec.schedule(() -> {
-                if (currentAnimationFrame.ordinal() > AnimationFrame.PULLBACK_2.ordinal()) {
-                    currentAnimationFrame = AnimationFrame.PULLBACK_1;
-                }
-            }, 250, TimeUnit.SECONDS);
-            exec.schedule(() -> {
-                if (currentAnimationFrame.ordinal() > AnimationFrame.DEFAULT.ordinal()) {
-                    currentAnimationFrame = AnimationFrame.DEFAULT;
-                }
-                isInUse = false;
-            }, 500, TimeUnit.MILLISECONDS);
+            // Animate blaster back to default frame
+            animateDown(30);
 
             // TODO:
             // [x] Reduce ammo while charging
             //      - Or how about consume ammo *while* it's charging
             //        in creative could consume and replace
-            // - animate while charging (pull back)
+            // [x] animate while charging (pull back)
             // - particles from the blaster
             // - Recipes
+            // - Code cleanup
             // Bundle and share?
         }
+    }
+
+    private final ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(5);
+
+
+    private void animateDown(int msAnimationDelay) {
+        if (currentAnimationFrame.ordinal() == 0) {
+            return;
+        }
+
+        currentAnimationFrame = AnimationFrame.values()[currentAnimationFrame.ordinal() - 1];
+
+        exec.schedule(() -> animateDown(msAnimationDelay), msAnimationDelay, TimeUnit.MILLISECONDS);
     }
 
     protected final float ticksPerCharge = 5F;
