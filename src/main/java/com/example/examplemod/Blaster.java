@@ -35,37 +35,56 @@ public class Blaster extends ShootableItem {
      * {@link #onItemUse}.
      */
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
-        //spawnLlama(world, player);
+    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity playerIn, Hand handIn) {
+        // Check if we have ammo
+        ItemStack blaster = playerIn.getHeldItem(handIn);
+        ItemStack ammo = playerIn.findAmmo(blaster);
 
-        //player.swingArm(hand);
+        // Fail if no ammo
+        if (ammo.isEmpty()) {
+           playerIn.sendStatusMessage(
+                   new StringTextComponent("Out of ammo!"),
+                   true
+           );
+           return ActionResult.resultFail(blaster);
+        }
 
         // Shoot!
         if (!world.isRemote && !isAnimating) {
             isAnimating = true;
             animationFrame = 0;
 
-            int PROJECTILE_COUNT = 5;
-            for (int i = 0; i < PROJECTILE_COUNT; i++) {
+            // Can shoot up to 5 ammo
+            int projectileCount = Math.min(5, ammo.getCount());
+
+            for (int i = 0; i < projectileCount; i++) {
+                // Create BlasterShot (ammo items)
                 ItemStack itemStackToThrow = new ItemStack(PapaMod.blasterShot);
-                BlasterShotEntity blasterShotEntity = new BlasterShotEntity(world, player);
+                BlasterShotEntity blasterShotEntity = new BlasterShotEntity(world, playerIn);
                 blasterShotEntity.setItem(itemStackToThrow);
 
                 // set the motion of the new entity
                 // Copied from MinecraftByExample repo (EmojiItem)
                 blasterShotEntity.func_234612_a_(
-                        player,
-                        player.rotationPitch + (random.nextFloat() * 20) - 10,
-                        player.rotationYaw + (random.nextFloat() * 20) - 10,
+                        playerIn,
+                        playerIn.rotationPitch + (random.nextFloat() * 20) - 10,
+                        playerIn.rotationYaw + (random.nextFloat() * 20) - 10,
                         0.0F, 1.5F, 1.0F
                 ); //.shoot
 
+                // Add Blaster Shot to world
                 world.addEntity(blasterShotEntity);
+            }
+
+            // Remove ammo from inventory
+            ammo.shrink(projectileCount);
+            if (ammo.isEmpty()) {
+                playerIn.inventory.deleteStack(ammo);
             }
         }
 
 
-        return super.onItemRightClick(world, player, hand);
+        return super.onItemRightClick(world, playerIn, handIn);
     }
 
     private void spawnLlama(World world, PlayerEntity player) {
@@ -139,7 +158,9 @@ public class Blaster extends ShootableItem {
      */
     @Override
     public Predicate<ItemStack> getInventoryAmmoPredicate() {
-        return (stack) -> stack.getItem() == PapaMod.blasterShot;
+        return (stack) -> {
+            return stack.getItem() == PapaMod.blasterShot;
+        };
     }
 
     @Override
@@ -147,5 +168,10 @@ public class Blaster extends ShootableItem {
         // ¯\_(ツ)_/¯
         // This is the value used by BowItem, something to do with target distance? or cooldown?
         return 15;
+    }
+
+    // Animation of player?!
+    public UseAction getUseAction(ItemStack stack) {
+        return UseAction.BOW;
     }
 }
