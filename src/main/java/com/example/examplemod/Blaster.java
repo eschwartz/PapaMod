@@ -6,6 +6,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.passive.horse.LlamaEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
@@ -50,11 +51,16 @@ public class Blaster extends ShootableItem {
         return currentAnimationFrame.ordinal();
     }
 
+    protected boolean isInUse = false;
 
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         // Check if we have ammo
         ItemStack blaster = playerIn.getHeldItem(handIn);
         ItemStack ammo = playerIn.findAmmo(blaster);
+
+//        if (isInUse) {
+//            return ActionResult.resultFail(blaster);
+//        }
 
         // Fail if no ammo
         if (ammo.isEmpty() && !playerIn.isCreative()) {
@@ -64,6 +70,8 @@ public class Blaster extends ShootableItem {
             );
             return ActionResult.resultFail(blaster);
         }
+
+        isInUse = true;
 
         playerIn.setActiveHand(handIn);
         return ActionResult.resultPass(blaster);
@@ -84,31 +92,6 @@ public class Blaster extends ShootableItem {
         ItemStack ammo = playerIn.findAmmo(blaster);
 
         return ammo;
-    }
-
-    protected int getChargedShots(PlayerEntity playerIn, int ticks) {
-        // Get ammo stack
-        Hand handIn = playerIn.getActiveHand();
-        ItemStack blaster = playerIn.getHeldItem(handIn);
-        ItemStack ammo = playerIn.findAmmo(blaster);
-
-        // Check how much ammo we have available in our player inventory
-        // (for creative, just consider it a full stack, no matter what)
-        int availableAmmoCount = playerIn.isCreative() ? 64 : ammo.getCount();
-
-
-        // Charge up a shot for every X ticks
-        int shotsByChargeTime = Math.max((int)Math.floor(ticks / 2.5F), 1);
-
-        // Figure out how many we're actually going to shoot
-        int chargedShots = Math.min(
-                // Can shoot up to 5 ammo
-                Math.min(availableAmmoCount, maxAmmoPerShot),
-                // Don't shoot more than we've charged
-                shotsByChargeTime
-        );
-
-        return chargedShots;
     }
 
     /**
@@ -153,7 +136,19 @@ public class Blaster extends ShootableItem {
             }
 
             ammoCharged = 0;
-            currentAnimationFrame = AnimationFrame.DEFAULT;
+
+            ScheduledThreadPoolExecutor exec = new ScheduledThreadPoolExecutor(1);
+            exec.schedule(() -> {
+                if (currentAnimationFrame.ordinal() > AnimationFrame.PULLBACK_2.ordinal()) {
+                    currentAnimationFrame = AnimationFrame.PULLBACK_1;
+                }
+            }, 250, TimeUnit.SECONDS);
+            exec.schedule(() -> {
+                if (currentAnimationFrame.ordinal() > AnimationFrame.DEFAULT.ordinal()) {
+                    currentAnimationFrame = AnimationFrame.DEFAULT;
+                }
+                isInUse = false;
+            }, 500, TimeUnit.MILLISECONDS);
 
             // TODO:
             // [x] Reduce ammo while charging
@@ -221,21 +216,24 @@ public class Blaster extends ShootableItem {
             if (ammo.isEmpty()) {
                 playerIn.inventory.deleteStack(ammo);
             }
-
-            // Update animation frame (blaster pulls back)
-            if (ticksInUse <= 1) {
-                currentAnimationFrame = AnimationFrame.PULLBACK_2;
-            }
-            else if (ticksInUse <= 2) {
-                currentAnimationFrame = AnimationFrame.PULLBACK_2;
-            }
-            else {
-                currentAnimationFrame = AnimationFrame.PULLBACK_3;
-            }
         }
 
 
+        // Update animation frame (blaster pulls back)
+        if (ticksInUse <= 1) {
+            currentAnimationFrame = AnimationFrame.PULLBACK_1;
+        }
+        else if (ticksInUse <= 2) {
+            currentAnimationFrame = AnimationFrame.PULLBACK_2;
+        }
+        else {
+            currentAnimationFrame = AnimationFrame.PULLBACK_3;
+        }
+
     }
+
+
+
 
     private void spawnLlama(World world, PlayerEntity player) {
         player.sendStatusMessage(
