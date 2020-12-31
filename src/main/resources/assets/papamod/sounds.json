@@ -1,0 +1,15 @@
+{
+  "blaster_load": {
+    "category": "player",
+    "sounds": [
+      "papamod:blaster_load_1",
+      "papamod:blaster_load_2"
+    ]
+  },
+  "blaster_fire": {
+    "category": "player",
+    "sounds": [
+      "papamod:blaster_fire"
+    ]
+  }
+}

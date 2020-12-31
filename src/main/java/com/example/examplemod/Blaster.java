@@ -2,6 +2,7 @@ package com.example.examplemod;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.Sound;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -11,9 +12,7 @@ import net.minecraft.entity.passive.horse.LlamaEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
@@ -21,6 +20,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.util.Random;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -28,6 +28,8 @@ import java.util.function.Predicate;
 public class Blaster extends ShootableItem {
 
     private static final Logger LOGGER = LogManager.getLogger();
+
+    protected Random rand = new Random();
 
     public Blaster() {
         super(new Item.Properties().maxStackSize(1).group(ItemGroup.COMBAT));
@@ -41,6 +43,13 @@ public class Blaster extends ShootableItem {
     }
 
     private AnimationFrame currentAnimationFrame = AnimationFrame.DEFAULT;
+
+    public SoundEvent BlasterLoadSound = new SoundEvent(
+            new ResourceLocation("papamod", "blaster_load")
+    );
+    public SoundEvent BlasterFireSound = new SoundEvent(
+            new ResourceLocation("papamod", "blaster_fire")
+    );
 
     /**
      * Animation Timer
@@ -134,6 +143,27 @@ public class Blaster extends ShootableItem {
 
                 // Add Blaster Shot to world
                 worldIn.addEntity(blasterShotEntity);
+
+
+                // Sound effect
+                playerIn.world.playSound(
+                        null,
+                        playerIn.getPosition(),
+                        BlasterFireSound,
+                        SoundCategory.PLAYERS,
+                        0.8F, 2.0F + rand.nextFloat() * 0.4F
+                );
+
+                int finalI = i;
+                exec.schedule(
+                    () -> playerIn.world.playSound(
+                            null,
+                            playerIn.getPosition(),
+                            BlasterFireSound,
+                            SoundCategory.PLAYERS,
+                            0.8F / finalI, 2.0F + rand.nextFloat() * 0.4F
+                    ),
+                i * 25L, TimeUnit.MILLISECONDS);
             }
 
             ammoCharged = 0;
@@ -215,6 +245,17 @@ public class Blaster extends ShootableItem {
             if (!ammo.isEmpty()) {
                 // Shave the ammo count, for when we actually shoot
                 ammoCharged += 1;
+
+                // Sound effect
+                playerIn.world.playSound(
+                        null,
+                        playerIn.getPosition(),
+                        BlasterLoadSound,
+                        SoundCategory.PLAYERS,
+                        0.6F, 2.0F + rand.nextFloat() * 0.4F
+                );
+
+                playerIn.playSound(BlasterLoadSound, 1F, 2.0F + rand.nextFloat() * 0.4F);
 
                 // Reduce inventory
                 if (!playerIn.isCreative()) {
