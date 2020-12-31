@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "_comment1": "see the various types of recipe in IRecipeSerializer",
+  "_comment2": "dirt + gunpowder",
+  "pattern": [
+    "   ",
+    " G ",
+    "DDD"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:gunpowder"
+    },
+    "D": {
+      "item": "minecraft:dirt"
+    }
+  },
+  "result": {
+    "item": "papamod:blastershot",
+    "count": 5
+  }
+}

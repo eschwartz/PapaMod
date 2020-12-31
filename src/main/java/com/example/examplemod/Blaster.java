@@ -146,9 +146,12 @@ public class Blaster extends ShootableItem {
             //        in creative could consume and replace
             // [x] animate while charging (pull back)
             // - particles from the blaster
+            //      wouldn't render?
             // - Recipes
             // - Code cleanup
+            // sound effects
             // Bundle and share?
+
         }
     }
 

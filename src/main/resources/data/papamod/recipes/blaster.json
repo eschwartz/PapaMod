@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "_comment1": "see the various types of recipe in IRecipeSerializer",
+  "_comment2": "Iron + stick + flint + lever",
+  "pattern": [
+    "   ",
+    "IIF",
+    " LS"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "F": {
+      "item": "minecraft:flint"
+    },
+    "L": {
+      "item": "minecraft:lever"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "item": "papamod:blaster"
+  }
+}
