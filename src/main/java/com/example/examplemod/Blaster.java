@@ -108,9 +108,10 @@ public class Blaster extends ShootableItem {
         ItemStack blaster = playerIn.getHeldItem(handIn);
         ItemStack ammo = playerIn.findAmmo(blaster);
 
-        // Fail if no ammo (and not in creative mode)
+        // Do nothing if if no ammo charged
         if (ammo.isEmpty() && !playerIn.isCreative()) {
-           return;
+            animateDown(30);
+            return;
         }
 
         // Shoot!
